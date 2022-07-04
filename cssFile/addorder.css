@@ -1,0 +1,171 @@
+html,
+body {
+    direction: rtl;
+    height: 100%;
+}
+
+body,
+input,
+select,textarea {
+    padding: 0;
+    margin: 0;
+    outline: none;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    color: #eee;
+}
+
+h1,
+h3 {
+    font-weight: 400;
+}
+
+h1 {
+    text-align: center;
+    font-size: 32px;
+}
+.h1, h1 {
+    text-align: center;
+    font-size: calc(1.375rem + 1.5vw);
+}
+
+h3 {
+    color: #1c87c9;
+}
+p{
+    color: white;
+    font-size: 20px;
+}
+
+.main-block{
+    display: flex;
+    flex-direction: column;
+}
+
+.main-block {
+    justify-content: center;
+    /* align-items: center; */
+    width: 75%;
+    margin-right: 15%;
+}
+
+form {
+    width: 80%;
+    padding: 25px;
+    margin-bottom: 20px;
+    background: rgb(27 58 47);
+    margin-right: 10%;
+}
+
+input,
+select, textarea {
+    padding: 5px;
+    margin-bottom: 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #eee;
+    border-right: 1px solid #eee;
+    border-left: 1px solid #eee;
+    font-size: 4%;
+}
+
+#totalPrice{
+    border-top: 1px solid #eee;
+
+}
+
+input::placeholder {
+    color: #eee;
+}
+
+option {
+    background: black;
+    border: none;
+}
+
+button {
+    display: block;
+    width: 200px;
+    padding: 10px;
+    margin: 20px auto 0;
+    border: none;
+    border-radius: 5px;
+    background: #1c87c9;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+    margin: 2% !important
+}
+
+.status *  {
+    color: white;
+}
+
+.item {
+    position: relative;
+    margin: 10px 0;
+}
+
+.item:hover p,
+.item:hover i {
+    color: lightblue;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+    box-shadow: 0 0 5px 0 lightblue;
+}
+
+.status:hover input {
+    box-shadow: none;
+}
+
+.status label:hover input {
+    box-shadow: 0 0 5px 0 lightblue;
+}
+
+.status-item input,
+.status-item span {
+    width: auto;
+    vertical-align: middle;
+}
+
+.status-item input {
+    margin: 0;
+}
+
+.status-item span {
+    margin: 0 20px 0 5px;
+}
+
+button:hover {
+    background: #00446e;
+}
+
+#datatables{
+    border-collapse: separate;
+}
+
+@media (min-width: 568px) {
+    .info {
+        flex-flow: row wrap;
+        justify-content: space-between;
+    }
+
+    input {
+        width: 46%;
+    }
+
+    input.fname {
+        width: 100%;
+    }
+
+    select {
+        width: 46%;
+    }
+    textarea {
+        border-top: 1px solid #eee;
+        width: 80%;
+    }
+}

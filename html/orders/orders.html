@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>الطلبات</title>
+    <link rel='stylesheet' href='../../cssFile/order.css'>
+    <meta charset="UTF-8" lang="ar">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+<script>
+    $(function () {
+        $("#sidebar").load("../dashboard/sidebar.html");
+    });
+</script>
+
+
+<body>
+    <div id="sidebar"></div>
+
+    <div class="main-block">
+
+        <div class="table-item">
+            <input class="form-control" id="myInput" type="text" placeholder="ابحث عن ...">
+
+        </div>
+    </div>
+
+
+    <script>
+        var user;
+        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+            session = JSON.parse(sessiondata);
+            if (session.error == 1) {
+                window.location.replace("../login.html");
+            }
+            user= session;
+        });
+        $(document).ready(function () {
+            $("#myInput").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#myTable tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        });
+
+        var items = [];
+        var itemData;
+        var orders;
+        var datTable = '';
+        var itemdetail;
+
+        $.get("../../phpFiles/orders/gitorder.php", { webToken: document.cookie }, function (orderdata, stauts) {
+            orders = JSON.parse(orderdata);
+            console.log(orders);
+            for (let x = 0; x < orders.length; x++) {
+                if(user.role != -1){   // check the user is not client              
+                    datTable += "<tr><td>" + orders[x][2] + "</td>";
+                    datTable += "<td>" + orders[x][3] + "</td>";
+                    datTable += "<td>" + orders[x][4] + "</td>";//ملاحظة الشركة
+                    datTable += "<td>" + orders[x][7] + "</td>";
+                    if (orders[x][6].includes(",")) {
+                        itemdetail = orders[x][6].split(",");
+                        for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
+                            if(itemdetail[item_ctr] != 0){
+                                datTable += "<td>" + itemdetail[item_ctr]+ "</td>";
+                            }
+                            else{
+                                datTable += "<td>" +" "+ "</td>";
+                            }
+                        }
+                    }
+                    // datTable += "<td>  </td>";
+                    //tools coloum
+                    if(user.role == 0){//manegar
+                        datTable += "<td>";
+                        datTable+=" <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary' >اضف ملاحظة</a>";
+                        datTable+="<button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger' >X حذف</button>";
+                        if(orders[x][5] == -1){//check the status of order is archived
+                            datTable+= " مؤرشف";
+                        }
+                        datTable+= "</td> </tr>";
+                    }
+                    else{ // employee
+                        if(orders[x][5] == 0){//check the status of order is not archived 
+                            datTable += "<td>";
+                            datTable+=" <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary' >اضف ملاحظة</a>";
+                            datTable+="<button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger' >X حذف</button>";
+                            datTable+= "</td> </tr>";
+                        }
+                        else if(orders[x][5] == -1){//check the status of order is archived
+                            datTable += "<td>";
+                            datTable+= "</td> </tr>";
+                        }
+                        else{
+                            // datTable+=" <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary' >اضف ملاحظة</a>";
+                            // datTable+="<button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger' >X حذف</button>";
+                        }
+
+                    }
+                }
+                else{
+                    console.log(user);
+                    if(orders[x][1] == user.userid){
+                        if(orders[x][5] != -1){    
+                            datTable += "<tr><td>" + orders[x][2] + "</td>";
+                            datTable += "<td>" + orders[x][3] + "</td>";
+                            datTable += "<td>" + orders[x][4] + "</td>";//ملاحظة الشركة
+                            datTable += "<td>" + orders[x][7] + "</td>";
+                            if (orders[x][6].includes(",")) {
+                                itemdetail = orders[x][6].split(",");
+                                for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
+                                    if(itemdetail[item_ctr] != 0){
+                                        datTable += "<td>" + itemdetail[item_ctr]+ "</td>";
+                                    }
+                                    else{
+                                        datTable += "<td>" +" "+ "</td>";
+                                    }
+                                }
+                            }
+                            if(orders[x][5] == 0){//check the status (normal status) can delete it
+                                datTable += "<td>";
+                                // datTable+=" <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary' >اضف ملاحظة</a>";
+                                datTable+="<button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger' >X حذف</button>";
+                                datTable+= "</td> </tr>";
+                            }
+                            // else if(orders[x][5] == -1){//check the status (archived status) can't delete it
+                            //     datTable += "<td> مؤرشف";
+                            //     datTable+= "</td> </tr>";
+                            // }
+                            else{ //check the status (other status) can't delete it
+                                datTable += "<td>";
+                                datTable+= "</td> </tr>";
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
+            data = JSON.parse(data);
+            items = data;
+            for (let j = 0; j < data.length; j++) {
+                itemData += "<th>" + data[j][0] + "</th>";
+            }
+            var table = `
+                            <table class="table">
+                                <thead class="thead-dark">
+                                        <th scope="col">اسم الزبون</th>
+                                        <th>ملاحظة الزبون</th>
+                                        <th>ملاحظة المصنع</th>
+                                        <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
+                                        `+ itemData + `
+                                        <th>     أدوات</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody id="myTable">`+ datTable + `</tbody>
+                            </table>	
+                                `;
+            $('.table-item').append(table);
+        });
+
+        function Delete(order_id) {
+            $.post("../../phpFiles/orders/deleteorder.php?id=" + order_id, {
+                webToken: document.cookie
+            },
+                function (response) {
+                    var jsonData = JSON.parse(response);
+                    if (jsonData.success == "1") {
+                        alert(" تم الحذف ");
+                    }
+                });
+            window.location.reload();
+        }
+
+
+        //for filter search input
+
+    </script>
+</body>
+
+
+</html>

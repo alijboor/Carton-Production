@@ -1,0 +1,80 @@
+<!-- A vertical navbar -->
+<!-- <link rel='stylesheet' href='../../cssFile/index.css'> -->
+<style type="text/css">
+  .sidebar{
+    background-color: #3d5c5c!important;
+  }
+  a.nav-link, h3.title, h4.text-light{
+   color:white !important;
+  }
+  .btn-secondary{
+    background-color:#3d5c5c !important;
+    border:0px;
+  }
+  a.text-success{
+    color:brown !important;
+  }
+  a.delete{
+    color:red !important;
+
+  }
+  label{
+    color:brown !important;
+
+  }
+
+  .sidebar{
+  background-color: #6c757d!important;
+    height: 92.4vh !important;
+    /* position: absolute; */
+    margin-left: -15px;
+    height: 92.4vh;
+    /* position: absolute; */
+    margin-left: -15px;
+    min-height: 100%;
+    position: fixed;
+    right: 0px;
+    width: 15%;
+}
+.sidebar .sidebar-list{
+position: absolute;
+    top: 8%;
+    /* left: 40px; */
+}
+.sidebar .navbar-nav li a{
+  color: white;
+  border-bottom: 1px solid #959696;
+}
+
+  
+</style>
+
+<nav class="navbar bg-light sidebar">
+  <ul class="accordion-container navbar-nav sidebar-list">
+    <li class="nav-item">
+      <a class="nav-link content-link" href="../../phpFiles/logout.php" id="account"><i class='fas fa-home'></i>حساب الشخص(تسجيل
+        الخروج)</a>
+    </li>
+    <!-- <li class="nav-item">
+      <a class="nav-link content-link" href="../index.html" id="account"><i class='fas fa-home'></i>الصفحة الرئيسية</a>
+    </li> -->
+    <!--==== accordion list-2 =====-->
+    <li class="nav-item accordion-content hide">
+      <a class="nav-link content-link" href="../orders/orders.html"> عرض الطلبات</a>
+    </li>
+
+    <li class="nav-item accordion-content hide">
+      <i class="fas fa-certificate"></i> <a class="nav-link content-link" href="../orders/addorder.html"> اضافة
+        طلبية</a>
+    </li>
+
+  </ul>
+</nav>
+
+<script>
+  $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+    var session = JSON.parse(sessiondata);
+    document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
+  });
+
+</script>
