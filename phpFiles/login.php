@@ -23,6 +23,6 @@
         header("location:../html/orders/orders.html");
     }
     else{
-        header("location:../html/login.html?error=1");
+        header("location:../html/index.html?error=1");
     }
 ?>

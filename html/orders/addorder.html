@@ -50,7 +50,7 @@
 
                 <p>ارفق ملف التصميم المرغوب طلبه:</p>
                 <input type="file" name="file" accept="file/*" id="file">
-                <a class="btn btn-primary" onclick="UploadFile()">ارفع الملف</a>
+                <!-- <a class="btn btn-primary" onclick="UploadFile()">ارفع الملف</a> -->
                 <br><br><a class="btn btn-primary" onclick="AddOrder()">ارسل الطلب الاّن</a>
             </div>
         </form>
@@ -64,7 +64,10 @@
         console.log(session);
         userid = session.userid;
         if (session.error == 1) {
-            window.location.replace("../login.html");
+            window.location.replace("../index.html");
+        }
+        if (session.role != -1) {
+            window.location.replace("orders.html");
         }
     });
     var items = [];
@@ -143,19 +146,53 @@
             }
             Order_data.push(document.getElementById('name').value);
             Order_data.push(document.getElementById('note').value);
-            Order_data.push(item_data);
-            console.log(Order_data);
-            $.post("../../phpFiles/orders/addorder.php?name=" + Order_data[0] + "&userid=" + userid + "&note=" + Order_data[1] + "&items=" + item_data, {
-                webToken: document.cookie
-            },
-                function (response) {
-                    var jsonData = JSON.parse(response);
-                    if (jsonData.success == "1") {
-                        alert(" تم حفظ ");
-                        window.location.replace("http://127.0.0.1:8885/CartonProduct/html/orders/orders.html");
 
+            console.log(Order_data);
+
+            var files = document.getElementById('file').files;
+            if (files.length > 0) {
+                var formData = new FormData();
+                formData.append("file", files[0]);
+                formData.append("userid", userid);
+                formData.append("name", Order_data[0]);
+                formData.append("note", Order_data[1]);
+                formData.append("items", item_data);
+
+                var xhttp = new XMLHttpRequest();
+
+                // Set POST method and ajax file path
+                xhttp.open("POST", "../../phpFiles/orders/addorder.php", true);
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState == 4 && this.status == 200) {
+                        var response = this.responseText;
+                        if (response == 1) {
+                            alert("تم رفع الملف بنجاح");
+                            window.location.replace("orders.html");
+
+                        } else {
+                            alert("حدثت مشكلة في رفع الملف");
+                        }
                     }
-                });
+                };
+                // Send request with data
+                xhttp.send(formData);
+            } else {
+                alert("رجاءً اختر ملف اولاً");
+            }
+            // Order_data.push(document.getElementById('name').value);
+            // Order_data.push(document.getElementById('note').value);
+            // Order_data.push(item_data);
+            // console.log(Order_data);
+            // $.post("../../phpFiles/orders/addorder.php?name=" + Order_data[0] + "&userid=" + userid + "&note=" + Order_data[1] + "&items=" + item_data, {
+            //     webToken: document.cookie
+            // },
+            //     function (response) {
+            //         var jsonData = JSON.parse(response);
+            //         if (jsonData.success == "1") {
+            //             alert(" تم حفظ ");
+            //             window.location.replace("http://127.0.0.1:8885/CartonProduct/html/orders/orders.html");
+            //         }
+            //     });
         }
         else {
             alert("رجاءً ادخل كميات اولاً");

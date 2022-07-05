@@ -52,8 +52,7 @@ position: absolute;
 <nav class="navbar bg-light sidebar">
   <ul class="accordion-container navbar-nav sidebar-list">
     <li class="nav-item">
-      <a class="nav-link content-link" href="../../phpFiles/logout.php" id="account"><i class='fas fa-home'></i>حساب الشخص(تسجيل
-        الخروج)</a>
+      <a class="nav-link content-link" href="../../phpFiles/logout.php" id="account"><i class='fas fa-home'></i></a>
     </li>
     <!-- <li class="nav-item">
       <a class="nav-link content-link" href="../index.html" id="account"><i class='fas fa-home'></i>الصفحة الرئيسية</a>
@@ -64,16 +63,27 @@ position: absolute;
     </li>
 
     <li class="nav-item accordion-content hide">
-      <i class="fas fa-certificate"></i> <a class="nav-link content-link" href="../orders/addorder.html"> اضافة
+      <i class="fas fa-certificate"></i> <a class="nav-link content-link" id="add" href="../orders/addorder.html"> اضافة
         طلبية</a>
     </li>
 
+    <li class="nav-item accordion-content hide" >
+      <i class="fas fa-certificate"></i> <a class="nav-link content-link" id="archived" href="../orders/archived.html"> الطلبيات المؤرشفة</a>
+    </li>
   </ul>
 </nav>
 
 <script>
+   var session;
   $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
-    var session = JSON.parse(sessiondata);
+    session = JSON.parse(sessiondata);
+    if(session.role != 0){
+        document.getElementById('archived').style.display = "none";
+    }
+
+    if(session.role != -1){
+        document.getElementById('add').style.display = "none";
+    }
     document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
   });
 

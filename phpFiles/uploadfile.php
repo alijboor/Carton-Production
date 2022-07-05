@@ -7,19 +7,12 @@
 
     $target_dir = "../files/";
     $id = $_POST["userid"];
-
-
     $filename = $_FILES['file']['name'];
-
     // Location
     $location = '../files/'.$id  . '.pdf';
- 
     // file extension
     $file_extension = pathinfo($location, PATHINFO_EXTENSION);
     $file_extension = strtolower($file_extension);
- 
-    // $target_file = $target_dir . $id  . '.pdf';
-    // Valid extensions
     $valid_ext = array("pdf","doc","docx","jpg","png","jpeg");
  
     $response = 0;
@@ -29,7 +22,6 @@
           $response = 1;
        } 
     }
- 
     echo $response;
     exit;
  ?>

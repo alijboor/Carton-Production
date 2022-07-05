@@ -42,7 +42,7 @@
         console.log(session);
         userid = session.userid;
         if (session.error == 1) {
-            window.location.replace("../login.html");
+            window.location.replace("../index.html");
         }
     });
 
@@ -57,7 +57,7 @@
                     var jsonData = JSON.parse(response);
                     if (jsonData.success == "1") {
                         alert(" تم حفظ ");
-                        window.location.replace("http://127.0.0.1:8885/CartonProduct/html/orders/orders.html");
+                        window.location.replace("orders.html");
                     }
                     else if (jsonData.error == "0") {
                         alert(" حدثت مشكلة ");
