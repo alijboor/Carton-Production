@@ -29,8 +29,6 @@
             <div class="save">
                 <div class="info">
                     <input class="fname" type="text" name="name" id="name" placeholder="اسم الزبون / الشركة">
-                    <!-- <input type="text" name="email " id="email" placeholder="ايميل الزبون / الشركة">
-                    <input type="text" name="phone" id="phone" placeholder="رقم الهاتف"> -->
                     <div class="item status">
                         <p>نوع الصنف:</p>
                         <div class="status-item">
@@ -41,7 +39,6 @@
                     السعر النهائي
                     <input type="text" name="totalPrice" id="totalPrice" disabled>
                 </p>
-                <!-- <a class="btn btn-primary" onclick="Calc()">احسب السعر النهائي</a> -->
 
                 <div class="note">
                     <p>ملاحظات: </p>
@@ -50,7 +47,6 @@
 
                 <p>ارفق ملف التصميم المرغوب طلبه:</p>
                 <input type="file" name="file" accept="file/*" id="file">
-                <!-- <a class="btn btn-primary" onclick="UploadFile()">ارفع الملف</a> -->
                 <br><br><a class="btn btn-primary" onclick="AddOrder()">ارسل الطلب الاّن</a>
             </div>
         </form>
@@ -82,8 +78,6 @@
             datTable += "<td><input type='text' id='price" + j + "' value=" + data[j][1] + " disabled></td></td>"
             datTable += "<td><input type='text' id='quantity" + j + "' onchange='Calc()' placeholder='الكمية' name ='items' ></td></tr>";
         }
-        // <td><input type='text' id='price" + j + "' value=" + data[j][1] + " disabled></td>
-        // <td><input type='text' id='quantity" + j + "' placeholder='الكمية' name ='items'></td>
         var table = `
                         <table id="datatables">
                             <tr>
@@ -97,35 +91,6 @@
                 `;
         $('.status-item').append(table);
     });
-
-    function UploadFile() {
-        var files = document.getElementById('file').files;
-        if (files.length > 0) {
-            var formData = new FormData();
-            formData.append("file", files[0]);
-            formData.append("userid", userid);
-
-            var xhttp = new XMLHttpRequest();
-
-            // Set POST method and ajax file path
-            xhttp.open("POST", "../../phpFiles/uploadfile.php", true);
-            xhttp.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    var response = this.responseText;
-                    if (response == 1) {
-                        alert("تم رفع الملف بنجاح");
-                    } else {
-                        alert("حدثت مشكلة في رفع الملف");
-                    }
-                }
-            };
-            // Send request with data
-            xhttp.send(formData);
-        } else {
-            alert("رجاءً اختر ملف اولاً");
-        }
-    }
-
 
     function Calc() {
         var total_price = 0;
@@ -147,52 +112,42 @@
             Order_data.push(document.getElementById('name').value);
             Order_data.push(document.getElementById('note').value);
 
-            console.log(Order_data);
-
             var files = document.getElementById('file').files;
             if (files.length > 0) {
-                var formData = new FormData();
-                formData.append("file", files[0]);
-                formData.append("userid", userid);
-                formData.append("name", Order_data[0]);
-                formData.append("note", Order_data[1]);
-                formData.append("items", item_data);
+                console.log(files[0].name.substr(-3));
+                if(files[0].name.substr(-3) == "pdf"){
+                    var formData = new FormData();
+                    formData.append("file", files[0]);
+                    formData.append("userid", userid);
+                    formData.append("name", Order_data[0]);
+                    formData.append("note", Order_data[1]);
+                    formData.append("items", item_data);
 
-                var xhttp = new XMLHttpRequest();
+                    var xhttp = new XMLHttpRequest();
 
-                // Set POST method and ajax file path
-                xhttp.open("POST", "../../phpFiles/orders/addorder.php", true);
-                xhttp.onreadystatechange = function () {
-                    if (this.readyState == 4 && this.status == 200) {
-                        var response = this.responseText;
-                        if (response == 1) {
-                            alert("تم رفع الملف بنجاح");
-                            window.location.replace("orders.html");
+                    // Set POST method and ajax file path
+                    xhttp.open("POST", "../../phpFiles/orders/addorder.php", true);
+                    xhttp.onreadystatechange = function () {
+                        if (this.readyState == 4 && this.status == 200) {
+                            var response = this.responseText;
+                            if (response == 1) {
+                                alert("تم رفع الملف بنجاح");
+                                // window.location.replace("orders.html");
 
-                        } else {
-                            alert("حدثت مشكلة في رفع الملف");
+                            } else {
+                                alert("حدثت مشكلة في رفع الملف");
+                            }
                         }
-                    }
-                };
-                // Send request with data
-                xhttp.send(formData);
+                    };
+                    // Send request with data
+                    xhttp.send(formData);
+                }
+                else{
+                    alert("رجاءً اختر ملف من نوع PDF");
+                }
             } else {
                 alert("رجاءً اختر ملف اولاً");
             }
-            // Order_data.push(document.getElementById('name').value);
-            // Order_data.push(document.getElementById('note').value);
-            // Order_data.push(item_data);
-            // console.log(Order_data);
-            // $.post("../../phpFiles/orders/addorder.php?name=" + Order_data[0] + "&userid=" + userid + "&note=" + Order_data[1] + "&items=" + item_data, {
-            //     webToken: document.cookie
-            // },
-            //     function (response) {
-            //         var jsonData = JSON.parse(response);
-            //         if (jsonData.success == "1") {
-            //             alert(" تم حفظ ");
-            //             window.location.replace("http://127.0.0.1:8885/CartonProduct/html/orders/orders.html");
-            //         }
-            //     });
         }
         else {
             alert("رجاءً ادخل كميات اولاً");

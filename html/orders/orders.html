@@ -57,28 +57,42 @@
     </div>
 
     <div class="main-block">
-
         <div class="table-item">
             <input class="form-control" id="myInput" type="text" placeholder="ابحث عن ...">
-
         </div>
     </div>
 
 
     <script>
+
+
+        var user;
+        var multi_role= [];
+        var is_multi_role = 0;
+        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+            session = JSON.parse(sessiondata);
+
+            if (session.error == 1) {
+                window.location.replace("../index.html");
+            }
+            user = session;
+            if(user.role.includes(",")){
+                multi_role =user.role.split(",");
+                is_multi_role = 1;
+                console.log(multi_role);
+            }
+        });
+
+
         setTimeout(function () {
             $('#exampleModal').on('show.bs.modal');
         }, 10000);
-        var status;
+        var statee;
         // when open the pop up get the order id
-        $('#exampleModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var id = button.data('whatever');
-            document.getElementById('orderid').value = id;
-        })
 
         $.get("../../phpFiles/orders/getstatus.php", { webToken: document.cookie }, function (datas, stauts) {
             var dats = JSON.parse(datas);
+            statee = dats;
             var x = document.getElementById("statusText");
             var option = document.createElement("option");
 
@@ -86,10 +100,10 @@
                 if (dats[i][0] != 'ارشيف') {
                     option.value = dats[i][1];
                     option.text = dats[i][0];
+                    option.id = "option"+i;
                     x.append(option);
                     option = document.createElement("option");
                 }
-
             }
         });
 
@@ -113,17 +127,8 @@
                 });
 
             console.log(document.getElementById('statusText').value);
-            $('#exampleModal').modal('toggle')
+            $('#exampleModal').modal('toggle');
         }
-
-        var user;
-        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
-            session = JSON.parse(sessiondata);
-            if (session.error == 1) {
-                window.location.replace("../index.html");
-            }
-            user = session;
-        });
 
         //for search input field
         $(document).ready(function () {
@@ -140,63 +145,42 @@
         var orders;
         var datTable = '';
         var itemdetail;
+        var st_bool = 0;
 
         $.get("../../phpFiles/orders/gitorder.php", { webToken: document.cookie }, function (orderdata, stauts) {
             orders = JSON.parse(orderdata);
-            for (let x = 0; x < orders.length; x++) {
-                if (user.role != -1) {   // check the user is not client              
-                    if (orders[x][5] != -1) {
-                        datTable += "<tr><td>" + orders[x][2] + "</td>";
-                        datTable += "<td>" + orders[x][3] + "</td>";
-                        datTable += "<td>" + orders[x][4] + "</td>";//ملاحظة الشركة
-                        datTable += "<td>" + orders[x][7] + "</td>";
-                        if (orders[x][6].includes(",")) {
-                            itemdetail = orders[x][6].split(",");
-                            for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
-                                if (itemdetail[item_ctr] != 0) {
-                                    datTable += "<td>" + itemdetail[item_ctr] + "</td>";
-                                }
-                                else {
-                                    datTable += "<td>" + " " + "</td>";
-                                }
-                            }
-                        }
-                        // datTable += "<td>  </td>";
+            if(orders != 0){
+                for (let x = 0; x < orders.length; x++) {
+                st_bool = 0;
+                if (user.role != -1) {   // check the user is not client
+                    if(user.role == 0 && orders[x][5] != -1){//manegar
+                        commonTableRows(orders[x]);
                         //tools coloum
-                        if (user.role == 0) {//manegar
-                            if (orders[x][5] != -1) {//check the status of order is not archived
-                                datTable += "<td>";
-                                datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
-                                datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
-                                //pop up
-                                datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-info' data-whatever=" + orders[x][0] + ">تعديل الحالة</button>";
+                        if (orders[x][5] != -1) {//check the status of order is not archived
+                            datTable += "<td>";
+                            datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
+                            datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                            //pop up
+                            datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-info' data-whatever=" + orders[x][0] + ">تعديل الحالة</button>";
 
-                                datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
-                                // datTable += " مؤرشف";
-                                datTable += "</td> </tr>";
-
-                            }
-
+                            datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
+                            // datTable += " مؤرشف";
+                            datTable += "</td> </tr>";
                         }
-                        else { // employee
-                            if (orders[x][5] == 0) {//check the status of order is not archived 
-                                datTable += "<td>";
-                                datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
-                                //display the file 
-                                datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                    } else if (orders[x][5] != -1 && (orders[x][5] in multi_role || user.role == orders[x][5])) { // employee
+                        commonTableRows(orders[x]);
+                        if (orders[x][5] in multi_role || user.role == orders[x][5]) {//check the status of order is not archived 
+                            datTable += "<td>";
+                            datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
+                            //display the file 
+                            datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
 
-                                datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
-                                datTable += "</td> </tr>";
-                            }
-                            else if (orders[x][5] == -1) {//check the status of order is archived
-                                datTable += "<td>";
-                                datTable += "</td> </tr>";
-                            }
-                            // else {
-                            //     // datTable+=" <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary' >اضف ملاحظة</a>";
-                            //     // datTable+="<button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger' >X حذف</button>";
-                            // }
-
+                            // datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
+                            datTable += "</td> </tr>";
+                        }
+                        else if (orders[x][5] == -1) {//check the status of order is archived
+                            datTable += "<td>";
+                            datTable += "</td> </tr>";
                         }
                     }
                 }
@@ -207,6 +191,21 @@
                             datTable += "<td>" + orders[x][3] + "</td>";
                             datTable += "<td>" + orders[x][4] + "</td>";//ملاحظة الشركة
                             datTable += "<td>" + orders[x][7] + "</td>";
+                            //
+                            for (let j = 0; j < statee.length; j++) {
+                                if(orders[x][5] == statee[j][1]){
+                                    datTable += "<td>" + statee[j][0] + "</td>";
+                                    st_bool = 1;
+                                    break;
+                                }
+                            }
+
+                            if(!st_bool){
+                                datTable += "<td></td>";
+                            }
+
+
+                            //
                             if (orders[x][6].includes(",")) {
                                 itemdetail = orders[x][6].split(",");
                                 for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
@@ -218,7 +217,7 @@
                                     }
                                 }
                             }
-                            if (orders[x][5] == 0) {//check the status (normal status) can delete it
+                            if (orders[x][5] == session.role) {//check the status (normal status) can delete it
                                 datTable += "<td>";
                                 //display the file 
                                 datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
@@ -231,6 +230,7 @@
                             // }
                             else { //check the status (other status) can't delete it
                                 datTable += "<td>";
+                                datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
                                 datTable += "</td> </tr>";
                             }
                         }
@@ -238,33 +238,68 @@
                 }
             }
             drawTable();
+            }
+            else{
+                $('.table-item').append('<h1>لا توجد بيانات</h1>');
+            }
         });
+
+        $('#exampleModal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var id = button.data('whatever');
+            document.getElementById('orderid').value = id;
+            var state_value;
+            for (let j = 0; j < orders.length; j++) {
+                if(orders[j][0] == id){
+                    for (let x = 0; x < statee.length -1; x++) {
+                        state_value = document.getElementById("option"+x).value;
+                        console.log(orders[j][5]);
+                        console.log(state_value);
+                        if(orders[j][5] == state_value){
+                            console.log('here');
+                            document.getElementById("option"+x).selected = true;
+                            break;
+                        }
+                        else{
+                            document.getElementById("option"+x).selected = false;
+                        }
+                    }
+                    break;
+                }
+            }
+        })
+
 
         function drawTable() {
             $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
                 data = JSON.parse(data);
                 items = data;
+                itemData = "";
                 for (let j = 0; j < data.length; j++) {
                     itemData += "<th>" + data[j][0] + "</th>";
                 }
                 var table = `
-                            <table class="table table-striped">
-                                <thead class="thead-dark">
-                                        <th scope="col">اسم الزبون</th>
-                                        <th>ملاحظة الزبون</th>
-                                        <th>ملاحظة المصنع</th>
-                                        <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
-                                        `+ itemData + `
-                                        <th>     أدوات</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody id="myTable">`+ datTable + `</tbody>
-                            </table>	
-                                `;
+                            <div>
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">اسم الزبون</th>
+                                            <th scope="col">ملاحظة الزبون</th>
+                                            <th scope="col">ملاحظة المصنع</th>
+                                            <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
+                                            <th scope="col">الحالة</th>
+                                            `+ itemData + `
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">`+ datTable + `</tbody>
+                                </table>
+                            </div>
+                                `;            
                 $('.table-item').append(table);
             });
         }
+
 
         function open_file(order_id) {
             var url = '../../files/' + order_id + '.pdf';
@@ -285,8 +320,35 @@
         }
 
 
-        //for filter search input
-
+        function commonTableRows(order){
+            datTable += "<tr><td>" + order[2] + "</td>";
+            datTable += "<td>" + order[3] + "</td>";
+            datTable += "<td>" + order[4] + "</td>";//ملاحظة الشركة
+            datTable += "<td>" + order[7] + "</td>";
+            //
+            for (let j = 0; j < statee.length; j++) {
+                if(order[5] == statee[j][1]){
+                    datTable += "<td>" + statee[j][0] + "</td>";
+                    st_bool = 1;
+                    break;
+                }
+            }
+            if(!st_bool){
+                datTable += "<td>"+''+"</td>";
+            }
+            //
+            if (order[6].includes(",")) {
+                itemdetail = order[6].split(",");
+                for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
+                    if (itemdetail[item_ctr] != 0) {
+                        datTable += "<td>" + itemdetail[item_ctr] + "</td>";
+                    }
+                    else {
+                        datTable += "<td>" + " " + "</td>";
+                    }
+                }
+            }
+        }
     </script>
 </body>
 

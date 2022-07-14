@@ -97,23 +97,26 @@
             $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
             data = JSON.parse(data);
             items = data;
+            itemData = "";
             for (let j = 0; j < data.length; j++) {
                 itemData += "<th>" + data[j][0] + "</th>";
             }
             var table = `
-                            <table class="table table-striped">
-                                <thead class="thead-dark">
-                                        <th scope="col">اسم الزبون</th>
-                                        <th>ملاحظة الزبون</th>
-                                        <th>ملاحظة المصنع</th>
-                                        <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
-                                        `+ itemData + `
-                                        <th>     أدوات</th>
-
-                                    </tr>
-                                </thead>
-                                <tbody id="myTable">`+ datTable + `</tbody>
-                            </table>	
+                            <div>
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">اسم الزبون</th>
+                                            <th scope="col">ملاحظة الزبون</th>
+                                            <th scope="col">ملاحظة المصنع</th>
+                                            <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
+                                            `+ itemData + `
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">`+ datTable + `</tbody>
+                                </table>
+                            </div>
                                 `;
             $('.table-item').append(table);
         });
