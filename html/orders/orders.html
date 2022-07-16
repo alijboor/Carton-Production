@@ -156,9 +156,8 @@
                     if(user.role == 0 && orders[x][5] != -1){//manegar
                         commonTableRows(orders[x]);
                         //tools coloum
-                        if (orders[x][5] != -1) {//check the status of order is not archived
+                        if (orders[x][5] == 0) {//check the status of order is not archived
                             datTable += "<td>";
-                            datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
                             datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
                             //pop up
                             datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-info' data-whatever=" + orders[x][0] + ">تعديل الحالة</button>";
@@ -217,7 +216,7 @@
                                     }
                                 }
                             }
-                            if (orders[x][5] == session.role) {//check the status (normal status) can delete it
+                            if (orders[x][5] == session.role || orders[x][5] == 0) {//check the status (normal status) can delete it
                                 datTable += "<td>";
                                 //display the file 
                                 datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
