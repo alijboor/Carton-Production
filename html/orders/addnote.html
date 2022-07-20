@@ -4,40 +4,131 @@
 <head>
     <link rel='stylesheet' href='../../cssFile/addorder.css'>
 
-    <title>اضافة طلبية</title>
-    <meta charset="UTF-8">
-    <link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
-
+    <title>اضافة ملاحظة</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
 
+    <style>
+        body {
+            direction: rtl;
+        }
 
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Raleway", sans-serif
+        }
+        .w3-bar-block .w3-bar-item {
+            text-align: center !important;
+        }
+    </style>
 </head>
-<script>
-    $(function () {
-        $("#sidebar").load("../dashboard/sidebar.html");
-    });
-</script>
 
-<body>
-    <div id="sidebar"></div>
+<body class="w3-light-grey w3-content" style="max-width:1600px">
 
-    <div class="main-block">
-        <h1>اضافة ملاحظة</h1>
-        <form id="save">
-            <div class="note">
-                <p>ملاحظات الشركة : </p>
-                <textarea rows="5" id="note"></textarea>
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-right" style="z-index:3;width:300px;" id="mySidebar"><br>
+        <div class="w3-container">
+            <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey"
+                title="close menu">
+                <i class="fa fa-remove"></i>
+            </a>
+            <!-- <a href="../orders/orders.html" > <img src="../assets/logo.jpg" width="45%" height="45%" class="d-inline-block align-top" alt="logo"> -->
+            <a href="../orders/orders.html"><img src="../../assets/logo.jpg" style="width:100%;" class="w3-round"></a>
+            <br><br>
+        </div>
+        <div class="w3-bar-block">
+            <a href="../phpFiles/logout.php" id="account" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding w3-text-teal"><i
+                    class="fa fa-th-large fa-fw w3-margin-left"></i></a>
+            <a href="../orders/orders.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                    class="fa fa-user fa-fw w3-margin-left"></i>عرض الطلبات</a>
+
+            <a id="add" href="../orders/addorder.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                    class="fa fa-user fa-fw w3-margin-left"></i>اضافة طلبية</a>
+            <a id="archived" href="../orders/archived.html" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-left"></i>الطلبيات
+                المؤرشفة</a>
+        </div>
+    </nav>
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+        title="close side menu" id="myOverlay"></div>
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-right:300px">
+
+        <!-- Header -->
+        <header id="portfolio">
+            <div class="w3-container">
+                <h1>
+                    <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i
+                            class="fa fa-bars"></i></span>
+                    <a href="../orders/orders.html"><img src="../../assets/logo.jpg" style="width:65px;"
+                            class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
+                    <b></b>
+                </h1>
             </div>
-            <br><br><a class="btn btn-primary" onclick="AddNote()">اضف</a>
+        </header>
 
-        </form>
+        <div style="overflow-x:auto;">
+            <h1>اضافة ملاحظة</h1>
+            <form id="save">
+                <div class="note">
+                    <p>ملاحظات الشركة : </p>
+                    <textarea rows="5" id="note"></textarea>
+                </div>
+                <br><br><a class="btn btn-primary" onclick="AddNote()">اضف</a>
+
+            </form>
+        </div>
+
     </div>
 
     <script>
-    $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+        function w3_open() {
+            document.getElementById("mySidebar").style.display = "block";
+            document.getElementById("myOverlay").style.display = "block";
+        }
+
+        function w3_close() {
+            document.getElementById("mySidebar").style.display = "none";
+            document.getElementById("myOverlay").style.display = "none";
+        }
+
+
+
+
+        var session;
+        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+            session = JSON.parse(sessiondata);
+            if (session.role != 0) {
+                document.getElementById('archived').style.display = "none";
+            }
+
+            if (session.role != -1) {
+                document.getElementById('add').style.display = "none";
+            }
+            document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
+        });
+
+        /////
+        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
         var session = JSON.parse(sessiondata);
         console.log(session);
         userid = session.userid;
@@ -65,5 +156,9 @@
                 });
 
         }
+
     </script>
+
 </body>
+
+</html>

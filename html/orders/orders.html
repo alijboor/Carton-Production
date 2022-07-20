@@ -5,7 +5,10 @@
     <title>الطلبات</title>
     <link rel='stylesheet' href='../../cssFile/order.css'>
     <meta charset="UTF-8" lang="ar">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -13,276 +16,414 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-</head>
-<script>
-    $(function () {
-        $("#sidebar").load("../dashboard/sidebar.html");
-    });
-</script>
-
-
-<body>
-    <div id="sidebar"></div>
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">تعديل الحالة للطلب</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form>
-
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">رقم الطلب:</label>
-                            <input type="text" class="form-control" id="orderid" disabled>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="recipient-name" class="col-form-label">الحالات</label>
-                            <select class="form-control" id="statusText">
-
-                            </select>
-                        </div>
-                    </form>
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="saveStatus()">حفظ</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">خروج</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="main-block">
-        <div class="table-item">
-            <input class="form-control" id="myInput" type="text" placeholder="ابحث عن ...">
-        </div>
-    </div>
-
-
-    <script>
-
-
-        var user;
-        var multi_role= [];
-        var is_multi_role = 0;
-        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
-            session = JSON.parse(sessiondata);
-
-            if (session.error == 1) {
-                window.location.replace("../index.html");
-            }
-            user = session;
-            if(user.role.includes(",")){
-                multi_role =user.role.split(",");
-                is_multi_role = 1;
-                console.log(multi_role);
-            }
-        });
-
-
-        setTimeout(function () {
-            $('#exampleModal').on('show.bs.modal');
-        }, 10000);
-        var statee;
-        // when open the pop up get the order id
-
-        $.get("../../phpFiles/orders/getstatus.php", { webToken: document.cookie }, function (datas, stauts) {
-            var dats = JSON.parse(datas);
-            statee = dats;
-            var x = document.getElementById("statusText");
-            var option = document.createElement("option");
-
-            for (let i = 0; i < dats.length; i++) {
-                if (dats[i][0] != 'ارشيف') {
-                    option.value = dats[i][1];
-                    option.text = dats[i][0];
-                    option.id = "option"+i;
-                    x.append(option);
-                    option = document.createElement("option");
-                }
-            }
-        });
-
-
-        function saveStatus() {
-            var orderid = document.getElementById('orderid').value;
-            var state = document.getElementById('statusText').value;
-            
-            $.post("../../phpFiles/orders/updatestatus.php?id=" + orderid + "&status=" + state, {
-                webToken: document.cookie
-            },
-                function (response) {
-                    var jsonData = JSON.parse(response);
-                    if (jsonData.success == "1") {
-                        alert(" تم حفظ ");
-                        window.location.replace("orders.html");
-                    }
-                    else if (jsonData.error == "0") {
-                        alert(" حدثت مشكلة ");
-                    }
-                });
-
-            console.log(document.getElementById('statusText').value);
-            $('#exampleModal').modal('toggle');
+    <style>
+        body {
+            direction: rtl;
         }
 
-        //for search input field
-        $(document).ready(function () {
-            $("#myInput").on("keyup", function () {
-                var value = $(this).val().toLowerCase();
-                $("#myTable tr").filter(function () {
-                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Raleway", sans-serif
+        }
+
+        .w3-bar-block .w3-bar-item {
+            text-align: center !important;
+        }
+    </style>
+</head>
+
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-right" style="z-index:3;width:300px;" id="mySidebar"><br>
+        <div class="w3-container">
+            <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey"
+                title="close menu">
+                <i class="fa fa-remove"></i>
+            </a>
+            <a href="../orders/orders.html"><img src="../../assets/logo.jpg" style="width:100%;" class="w3-round"></a>
+            <br><br>
+        </div>
+        <div class="w3-bar-block">
+            <a href="../../phpFiles/logout.php" id="account" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding w3-text-teal"><i
+                    class="fa fa-th-large fa-fw w3-margin-left"></i></a>
+            <a href="../orders/orders.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                    class="fa fa-user fa-fw w3-margin-left"></i>عرض الطلبات</a>
+
+            <a id="add" href="../orders/addorder.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                    class="fa fa-user fa-fw w3-margin-left" style="text-align: center;"></i>اضافة طلبية</a>
+            <a id="archived" href="../orders/archived.html" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-left"></i>الطلبيات
+                المؤرشفة</a>
+        </div>
+    </nav>
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+        title="close side menu" id="myOverlay"></div>
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-right:300px">
+
+        <!-- Header -->
+        <header id="portfolio">
+            <div class="w3-container">
+                <h1>
+                    <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i
+                            class="fa fa-bars"></i></span>
+                    <a href="../orders/orders.html"><img src="../../assets/logo.jpg" style="width:65px;"
+                            class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
+                    <b></b>
+                </h1>
+            </div>
+        </header>
+
+
+        <div class="w3-container w3-padding-large" style="margin-bottom:32px">
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">تعديل الحالة للطلب</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">رقم الطلب:</label>
+                                    <input type="text" class="form-control" id="orderid" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">الحالات</label>
+                                    <select class="form-control" id="statusText">
+
+                                    </select>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="saveStatus()">حفظ</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">خروج</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w3-container w3-padding-large" style="margin-bottom:32px">
+                <div class="modal fade" id="pricePopUp" tabindex="-1" aria-labelledby="pricePopUpLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="pricePopUpLabel">سعر الطلبية </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form>
+
+                                    <div class="form-group">
+                                        <label for="recipient-name" class="col-form-label">اسم الزبون:</label>
+                                        <input type="text" class="form-control" id="orderid1" disabled>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="recipient-name" class="col-form-label">اجمالي المبلغ
+                                            للطلبية:</label>
+                                        <input type="text" class="form-control" id="price_total" disabled>
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">خروج</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="table-item">
+                    <input class="form-control" id="myInput" type="text" placeholder="ابحث عن ...">
+                </div>
+
+            </div>
+
+            <script>
+                function w3_open() {
+                    document.getElementById("mySidebar").style.display = "block";
+                    document.getElementById("myOverlay").style.display = "block";
+                }
+
+                function w3_close() {
+                    document.getElementById("mySidebar").style.display = "none";
+                    document.getElementById("myOverlay").style.display = "none";
+                }
+
+
+
+
+                var session;
+                var user;
+                var multi_role = [];
+                var is_multi_role = 0;
+                $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+                    session = JSON.parse(sessiondata);
+                    if (session.role != 0) {
+                        document.getElementById('archived').style.display = "none";
+                    }
+
+                    if (session.role != -1) {
+                        document.getElementById('add').style.display = "none";
+                    }
+                    document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
+
+                    if (session.error == 1) {
+                        window.location.replace("../index.html");
+                    }
+                    user = session;
+                    if (user.role.includes(",")) {
+                        multi_role = user.role.split(",");
+                        is_multi_role = 1;
+                        console.log(multi_role);
+                    }
+
                 });
-            });
-        });
 
-        var items = [];
-        var itemData;
-        var orders;
-        var datTable = '';
-        var itemdetail;
-        var st_bool = 0;
+                var items = [];
+                var items_copy = [];
 
-        $.get("../../phpFiles/orders/gitorder.php", { webToken: document.cookie }, function (orderdata, stauts) {
-            orders = JSON.parse(orderdata);
-            if(orders != 0){
-                for (let x = 0; x < orders.length; x++) {
-                st_bool = 0;
-                if (user.role != -1) {   // check the user is not client
-                    if(user.role == 0 && orders[x][5] != -1){//manegar
-                        commonTableRows(orders[x]);
-                        //tools coloum
-                        if (orders[x][5] == 0) {//check the status of order is not archived
-                            datTable += "<td>";
-                            datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
-                            //pop up
-                            datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-info' data-whatever=" + orders[x][0] + ">تعديل الحالة</button>";
+                var itemData;
+                var orders;
+                var datTable = '';
+                var itemdetail;
+                var st_bool = 0;
+                var newPrice;
+                //get new price
+                $.get("../../phpFiles/orders/getnewprice.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+                    newPrice = JSON.parse(sessiondata);
+                });
 
-                            datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
-                            // datTable += " مؤرشف";
-                            datTable += "</td> </tr>";
-                        }
-                    } else if (orders[x][5] != -1 && (orders[x][5] in multi_role || user.role == orders[x][5])) { // employee
-                        commonTableRows(orders[x]);
-                        if (orders[x][5] in multi_role || user.role == orders[x][5]) {//check the status of order is not archived 
-                            datTable += "<td>";
-                            datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
-                            //display the file 
-                            datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                //get defualt prices
+                $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
+                        data = JSON.parse(data);
+                        items = data;
+                        items_copy = data;
+                });
 
-                            // datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
-                            datTable += "</td> </tr>";
-                        }
-                        else if (orders[x][5] == -1) {//check the status of order is archived
-                            datTable += "<td>";
-                            datTable += "</td> </tr>";
+
+                setTimeout(function () {
+                    $('#exampleModal').on('show.bs.modal');
+                }, 10000);
+                var statee;
+                // when open the pop up get the order id
+                $.get("../../phpFiles/orders/getstatus.php", { webToken: document.cookie }, function (datas, stauts) {
+                    var dats = JSON.parse(datas);
+                    statee = dats;
+                    var x = document.getElementById("statusText");
+                    var option = document.createElement("option");
+
+                    for (let i = 0; i < dats.length; i++) {
+                        if (dats[i][0] != 'ارشيف') {
+                            option.value = dats[i][1];
+                            option.text = dats[i][0];
+                            option.id = "option" + i;
+                            x.append(option);
+                            option = document.createElement("option");
                         }
                     }
+                });
+
+
+                function saveStatus() {
+                    var orderid = document.getElementById('orderid').value;
+                    var state = document.getElementById('statusText').value;
+
+                    $.post("../../phpFiles/orders/updatestatus.php?id=" + orderid + "&status=" + state, {
+                        webToken: document.cookie
+                    },
+                        function (response) {
+                            var jsonData = JSON.parse(response);
+                            if (jsonData.success == "1") {
+                                alert(" تم حفظ ");
+                                window.location.replace("orders.html");
+                            }
+                            else if (jsonData.error == "0") {
+                                alert(" حدثت مشكلة ");
+                            }
+                        });
+
+                    console.log(document.getElementById('statusText').value);
+                    $('#exampleModal').modal('toggle');
                 }
-                else {
-                    if (orders[x][1] == user.userid) {
-                        if (orders[x][5] != -1) {
-                            datTable += "<tr><td>" + orders[x][2] + "</td>";
-                            datTable += "<td>" + orders[x][3] + "</td>";
-                            datTable += "<td>" + orders[x][4] + "</td>";//ملاحظة الشركة
-                            datTable += "<td>" + orders[x][7] + "</td>";
-                            //
-                            for (let j = 0; j < statee.length; j++) {
-                                if(orders[x][5] == statee[j][1]){
-                                    datTable += "<td>" + statee[j][0] + "</td>";
-                                    st_bool = 1;
+
+                //for search input field
+                $(document).ready(function () {
+                    $("#myInput").on("keyup", function () {
+                        var value = $(this).val().toLowerCase();
+                        $("#myTable tr").filter(function () {
+                            $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                        });
+                    });
+                });
+
+                $.get("../../phpFiles/orders/gitorder.php", { webToken: document.cookie }, function (orderdata, stauts) {
+                    orders = JSON.parse(orderdata);
+                    if (orders != 0) {
+                        for (let x = 0; x < orders.length; x++) {
+                            st_bool = 0;
+                            if (user.role != -1) {   // check the user is not client
+                                if (user.role == 0 && orders[x][5] != -1) {//manegar
+                                    commonTableRows(orders[x]);
+                                    //tools coloum
+                                    if (orders[x][5] != -1) {//check the status of order is not archived
+                                        datTable += "<td>";
+                                        datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                                        //pop up
+                                        datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#exampleModal' class='btn btn-info' data-whatever=" + orders[x][0] + ">تعديل الحالة</button>";
+
+                                        //price pop up
+                                        datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#pricePopUp' class='btn btn-success' data-price=" + orders[x][9] + " data-whatever=" + orders[x][8] + ">سعر الطلبية</button>";
+
+                                        datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
+                                        // datTable += " مؤرشف";
+                                        datTable += "</td> </tr>";
+                                    }
+                                } else if (orders[x][5] != -1 && (multi_role.includes(orders[x][5]) || user.role == orders[x][5])) { // employee
+                                    commonTableRows(orders[x]);
+                                    if (multi_role.includes(orders[x][5]) || user.role == orders[x][5]) {//check the status of order is not archived 
+                                        datTable += "<td>";
+                                        datTable += " <a href='addnote.html?" + orders[x][0] + "' class='btn btn-primary btn-rounded' >اضف ملاحظة</a>";
+                                        //display the file 
+                                        datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                                        //price pop up
+                                        datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#pricePopUp' class='btn btn-success' data-price=" + orders[x][9] + " data-whatever=" + orders[x][8] + ">سعر الطلبية</button>";
+
+                                        datTable += "</td> </tr>";
+                                    }
+                                    //check the status of order is archived
+                                    else if (orders[x][5] == -1) {
+                                        datTable += "<td>";
+                                        datTable += "</td> </tr>";
+                                    }
+                                }
+                            }
+                            else {
+                                if (orders[x][1] == user.userid) {
+                                    if (orders[x][5] != -1) {
+                                        datTable += "<tr><td>" + orders[x][2] + "</td>";
+                                        datTable += "<td>" + orders[x][3] + "</td>";
+                                        datTable += "<td>" + orders[x][4] + "</td>";//ملاحظة الشركة
+                                        datTable += "<td>" + orders[x][7] + "</td>";
+                                        //
+                                        for (let j = 0; j < statee.length; j++) {
+                                            if (orders[x][5] == statee[j][1]) {
+                                                datTable += "<td>" + statee[j][0] + "</td>";
+                                                st_bool = 1;
+                                                break;
+                                            }
+                                        }
+
+                                        if (!st_bool) {
+                                            datTable += "<td></td>";
+                                        }
+                                        //
+                                        if (orders[x][6].includes(",")) {
+                                            itemdetail = orders[x][6].split(",");
+                                            for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
+                                                if (itemdetail[item_ctr] != 0) {
+                                                    datTable += "<td>" + itemdetail[item_ctr] + "</td>";
+                                                }
+                                                else {
+                                                    datTable += "<td>" + " " + "</td>";
+                                                }
+                                            }
+                                        }
+                                        if (orders[x][5] == session.role || orders[x][5] == 0) {//check the status (normal status) can delete it
+                                            datTable += "<td>";
+                                            //display the file 
+                                            datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                                            datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
+                                            datTable += "</td> </tr>";
+                                        }
+                                        //check the status (other status) can't delete it
+                                        else {
+                                            datTable += "<td>";
+                                            datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
+                                            datTable += "</td> </tr>";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        drawTable();
+                    }
+                    else {
+                        $('.table-item').append('<h1>لا توجد بيانات</h1>');
+                    }
+                });
+                // edit state
+                $('#exampleModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget); // Button that triggered the modal
+                    var id = button.data('whatever');
+
+                    document.getElementById('orderid').value = id;
+                    var state_value;
+                    for (let j = 0; j < orders.length; j++) {
+                        if (orders[j][0] == id) {
+                            for (let x = 0; x < statee.length - 1; x++) {
+                                state_value = document.getElementById("option" + x).value;
+                                console.log(orders[j][5]);
+                                console.log(state_value);
+                                if (orders[j][5] == state_value) {
+                                    console.log('here');
+                                    document.getElementById("option" + x).selected = true;
                                     break;
                                 }
-                            }
-
-                            if(!st_bool){
-                                datTable += "<td></td>";
-                            }
-
-
-                            //
-                            if (orders[x][6].includes(",")) {
-                                itemdetail = orders[x][6].split(",");
-                                for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
-                                    if (itemdetail[item_ctr] != 0) {
-                                        datTable += "<td>" + itemdetail[item_ctr] + "</td>";
-                                    }
-                                    else {
-                                        datTable += "<td>" + " " + "</td>";
-                                    }
+                                else {
+                                    document.getElementById("option" + x).selected = false;
                                 }
                             }
-                            if (orders[x][5] == session.role || orders[x][5] == 0) {//check the status (normal status) can delete it
-                                datTable += "<td>";
-                                //display the file 
-                                datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
-                                datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
-                                datTable += "</td> </tr>";
-                            }
-                            // else if(orders[x][5] == -1){//check the status (archived status) can't delete it
-                            //     datTable += "<td> مؤرشف";
-                            //     datTable+= "</td> </tr>";
-                            // }
-                            else { //check the status (other status) can't delete it
-                                datTable += "<td>";
-                                datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
-                                datTable += "</td> </tr>";
-                            }
-                        }
-                    }
-                }
-            }
-            drawTable();
-            }
-            else{
-                $('.table-item').append('<h1>لا توجد بيانات</h1>');
-            }
-        });
-
-        $('#exampleModal').on('show.bs.modal', function (event) {
-            var button = $(event.relatedTarget); // Button that triggered the modal
-            var id = button.data('whatever');
-            document.getElementById('orderid').value = id;
-            var state_value;
-            for (let j = 0; j < orders.length; j++) {
-                if(orders[j][0] == id){
-                    for (let x = 0; x < statee.length -1; x++) {
-                        state_value = document.getElementById("option"+x).value;
-                        console.log(orders[j][5]);
-                        console.log(state_value);
-                        if(orders[j][5] == state_value){
-                            console.log('here');
-                            document.getElementById("option"+x).selected = true;
                             break;
                         }
-                        else{
-                            document.getElementById("option"+x).selected = false;
-                        }
                     }
-                    break;
-                }
-            }
-        })
+                })
+
+                // show the total price for
+                $('#pricePopUp').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget); // Button that triggered the modal
+                    var id = button.data('whatever');
+                    var price = button.data('price');
+
+                    document.getElementById('orderid1').value = id;
+                    document.getElementById('price_total').value = price;
+                })
 
 
-        function drawTable() {
-            $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
-                data = JSON.parse(data);
-                items = data;
-                itemData = "";
-                for (let j = 0; j < data.length; j++) {
-                    itemData += "<th>" + data[j][0] + "</th>";
-                }
-                var table = `
-                            <div>
+
+                function drawTable() {
+                        itemData = "";
+                        for (let j = 0; j < items.length; j++) {
+                            itemData += "<th>" + items[j][1] + "</th>";
+                        }
+                        var table = ``;
+                        if (user.role == -1) {
+                            table = `
+                            <div style="overflow-x:auto;">
                                 <table class="table table-striped">
                                     <thead class="thead-dark">
                                         <tr>
-                                            <th scope="col">اسم الزبون</th>
+                                            <th scope="col">اسم الطبعة</th>
                                             <th scope="col">ملاحظة الزبون</th>
                                             <th scope="col">ملاحظة المصنع</th>
                                             <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
@@ -294,62 +435,136 @@
                                     <tbody id="myTable">`+ datTable + `</tbody>
                                 </table>
                             </div>
-                                `;            
-                $('.table-item').append(table);
-            });
-        }
+                                `;
 
+                        }
+                        else {
+                            table = `
+                            <div style="overflow-x:auto;">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col" >اسم الزبون</th>
+                                            <th scope="col">اسم الطبعة</th>
+                                            <th scope="col">ملاحظة الزبون</th>
+                                            <th scope="col">ملاحظة المصنع</th>
+                                            <th data-type="date" data-format="YYYY/MM/DD">تاريخ الطلب</th>
+                                            <th scope="col">الحالة</th>
+                                            `+ itemData + `
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">`+ datTable + `</tbody>
+                                </table>
+                            </div>
+                                `;
 
-        function open_file(order_id) {
-            var url = '../../files/' + order_id + '.pdf';
-            window.open(url, '_blank').focus();
-        }
-
-        function Delete(order_id) {
-            $.post("../../phpFiles/orders/deleteorder.php?id=" + order_id, {
-                webToken: document.cookie
-            },
-                function (response) {
-                    var jsonData = JSON.parse(response);
-                    if (jsonData.success == "1") {
-                        alert(" تم الحذف ");
-                    }
-                });
-            window.location.reload();
-        }
-
-
-        function commonTableRows(order){
-            datTable += "<tr><td>" + order[2] + "</td>";
-            datTable += "<td>" + order[3] + "</td>";
-            datTable += "<td>" + order[4] + "</td>";//ملاحظة الشركة
-            datTable += "<td>" + order[7] + "</td>";
-            //
-            for (let j = 0; j < statee.length; j++) {
-                if(order[5] == statee[j][1]){
-                    datTable += "<td>" + statee[j][0] + "</td>";
-                    st_bool = 1;
-                    break;
+                        }
+                        $('.table-item').append(table);
                 }
-            }
-            if(!st_bool){
-                datTable += "<td>"+''+"</td>";
-            }
-            //
-            if (order[6].includes(",")) {
-                itemdetail = order[6].split(",");
-                for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
-                    if (itemdetail[item_ctr] != 0) {
-                        datTable += "<td>" + itemdetail[item_ctr] + "</td>";
-                    }
-                    else {
-                        datTable += "<td>" + " " + "</td>";
-                    }
+
+
+                function open_file(order_id) {
+                    var url = '../../files/' + order_id + '.pdf';
+                    window.open(url, '_blank').focus();
                 }
-            }
-        }
-    </script>
+
+                function Delete(order_id) {
+                    $.post("../../phpFiles/orders/deleteorder.php?id=" + order_id, {
+                        webToken: document.cookie
+                    },
+                        function (response) {
+                            var jsonData = JSON.parse(response);
+                            if (jsonData.success == "1") {
+                                alert(" تم الحذف ");
+                            }
+                        });
+                    window.location.reload();
+                }
+
+
+                function commonTableRows(order) {
+                    var Total_price = 0.0;
+                    datTable += "<tr>";
+                    datTable += "<td>" + order[8] + "</td>";
+                    datTable += "<td>" + order[2] + "</td>";
+                    datTable += "<td>" + order[3] + "</td>";
+                    datTable += "<td>" + order[4] + "</td>";//ملاحظة الشركة
+                    datTable += "<td>" + order[7] + "</td>";
+                    //
+                    for (let j = 0; j < statee.length; j++) {
+                        if (order[5] == statee[j][1]) {
+                            datTable += "<td>" + statee[j][0] + "</td>";
+                            st_bool = 1;
+                            break;
+                        }
+                    }
+                    if (!st_bool) {
+                        datTable += "<td>" + '' + "</td>";
+                    }
+                    //
+                    // for (let x = 0; x < items.length; x++) {
+                    //         for (let j = 0; j < newPrice.length; j++) {
+                                    
+
+                    //                 if (items[x][0] == newPrice[j][1] && order[1] == newPrice[j][0]) {
+                    //                     items[x][2] = newPrice[j][2];
+                    //                     // console.log(order[1]);
+                    //                     // console.log(newPrice);
+                    //                     console.log(newPrice[j][2]);
+                    //                     console.log(items[x][0]);
+                    //                     console.log(newPrice[j][1]);
+                    //                     console.log(order[1]);
+                    //                     console.log(newPrice[j][0]);
+
+
+
+
+                    //                 }
+                                
+                    //         }                            
+                    //     }
+                    // for (let i = 0; i < newPrice.length; i++) {
+                    //     if(order[1] == newPrice[i][0]){//check the user id 
+                    //         for (let j = 0; j < items.length; j++) {
+                    //             if(newPrice[i][1] == items[j][0] && order[1] == newPrice[i][0]){
+                    //                 console.log("true");
+                    //                 console.log(newPrice[i]);
+                    //                 console.log(items[j][0]);
+                    //                 items[j][2] = newPrice[i][2];
+                    //                 console.log(items);
+                    //                 console.log("done");
+                    //             }                                
+                    //         }
+                    //     }
+                    // }
+                    // console.log(newPrice);
+                    // console.log(order);
+
+                    // console.log(items);
+
+                    // // items = [];
+                    // // items = items_copy;
+                    // console.log(items_copy);
+
+                    if (order[6].includes(",")) {
+                        itemdetail = order[6].split(",");
+                        for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
+                            if (itemdetail[item_ctr] != 0) {
+                                datTable += "<td>" + itemdetail[item_ctr] + "</td>";
+                                Total_price += (itemdetail[item_ctr] * items[item_ctr][2]);
+                            }
+                            else {
+                                datTable += "<td>" + " " + "</td>";
+                            }
+                        }
+                    }
+                    order[9]= Total_price;
+                    console.log(order[9]);
+                }
+
+            </script>
+
 </body>
-
 
 </html>

@@ -37,24 +37,10 @@ p{
     font-size: 20px;
 }
 
-.main-block{
-    display: flex;
-    flex-direction: column;
-}
-
-.main-block {
-    justify-content: center;
-    /* align-items: center; */
-    width: 75%;
-    margin-right: 15%;
-}
-
 form {
-    width: 80%;
     padding: 25px;
     margin-bottom: 20px;
     background: rgb(27 58 47);
-    margin-right: 10%;
 }
 
 input,

@@ -1,6 +1,6 @@
-<!-- A vertical navbar -->
+A vertical navbar
 <!-- <link rel='stylesheet' href='../../cssFile/index.css'> -->
-<style type="text/css">
+<!-- <style type="text/css">
   .sidebar{
     background-color: #3d5c5c!important;
   }
@@ -46,17 +46,63 @@ position: absolute;
   border-bottom: 1px solid #959696;
 }
 
-  
-</style>
+/* On screens that are less than 700px wide, make the sidebar into a topbar */
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: right;}
+}
 
-<nav class="navbar bg-light sidebar">
-  <ul class="accordion-container navbar-nav sidebar-list">
+/* On screens that are less than 400px, display the bar vertically, instead of horizontally */
+@media screen and (max-width: 400px) {
+  .sidebar ul li{
+    text-align: center;
+    float: none;
+  }
+} -->
+
+<!-- </style>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container">
+    <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
+      <i class="fa fa-remove"></i>
+    </a>
+    <img src="/w3images/avatar_g2.jpg" style="width:45%;" class="w3-round"><br><br>
+    <h4><b>PORTFOLIO</b></h4>
+    <p class="w3-text-grey">Template by W3.CSS</p>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#portfolio" onclick="w3_close()" class="w3-bar-item w3-button w3-padding w3-text-teal"><i class="fa fa-th-large fa-fw w3-margin-right"></i>PORTFOLIO</a> 
+    <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw w3-margin-right"></i>ABOUT</a> 
+    <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-right"></i>CONTACT</a>
+  </div>
+  <div class="w3-panel w3-large">
+    <i class="fa fa-facebook-official w3-hover-opacity"></i>
+    <i class="fa fa-instagram w3-hover-opacity"></i>
+    <i class="fa fa-snapchat w3-hover-opacity"></i>
+    <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+    <i class="fa fa-twitter w3-hover-opacity"></i>
+    <i class="fa fa-linkedin w3-hover-opacity"></i>
+  </div>
+</nav>
+
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div> -->
+
+
+<!-- <nav class="navbar bg-light sidebar">
+  <ul class="nav flex-column text-white w-100">
       <a href="../orders/orders.html" > <img src="../../assets/logo.jpg" width="150" height="150" class="d-inline-block align-top" alt="logo">      </a>
     <li class="nav-item">
       <a class="nav-link content-link" href="../../phpFiles/logout.php" id="account"><i class='fas fa-home'> </i></a>
     </li>
 
-    <!--==== accordion list-2 =====-->
     <li class="nav-item accordion-content hide">
       <a class="nav-link content-link" href="../orders/orders.html"> عرض الطلبات</a>
     </li>
@@ -70,9 +116,19 @@ position: absolute;
       <i class="fas fa-certificate"></i> <a class="nav-link content-link" id="archived" href="../orders/archived.html"> الطلبيات المؤرشفة</a>
     </li>
   </ul>
-</nav>
+</nav> -->
 
-<script>
+<!-- <script>
+  function w3_open() {
+    document.getElementById("mySidebar").style.display = "block";
+    document.getElementById("myOverlay").style.display = "block";
+}
+ 
+function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+    document.getElementById("myOverlay").style.display = "none";
+}
+
    var session;
   $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
     session = JSON.parse(sessiondata);
@@ -86,4 +142,4 @@ position: absolute;
     document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
   });
 
-</script>
+</script> -->
