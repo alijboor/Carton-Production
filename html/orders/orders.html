@@ -54,13 +54,16 @@
                 class="w3-bar-item w3-button w3-padding w3-text-teal"><i
                     class="fa fa-th-large fa-fw w3-margin-left"></i></a>
             <a href="../orders/orders.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
-                    class="fa fa-user fa-fw w3-margin-left"></i>عرض الطلبات</a>
+                    class="fa fa-file fa-fw w3-margin-left"></i>عرض الطلبات</a>
 
             <a id="add" href="../orders/addorder.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
-                    class="fa fa-user fa-fw w3-margin-left" style="text-align: center;"></i>اضافة طلبية</a>
+                    class="fa fa-file fa-fw w3-margin-left" style="text-align: center;"></i>اضافة طلبية</a>
             <a id="archived" href="../orders/archived.html" onclick="w3_close()"
                 class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-left"></i>الطلبيات
                 المؤرشفة</a>
+            <a id = "customer" href="../orders/customer.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                class="fa fa-user fa-fw w3-margin-left"></i>عرض الزبائن</a>
+
         </div>
     </nav>
 
@@ -172,26 +175,41 @@
 
 
 
+                var items = [];
 
-                var session;
+                var itemData;
+                var orders;
+                var datTable = '';
+                var itemdetail;
+                var st_bool = 0;
+                var newPrice;
+
                 var user;
                 var multi_role = [];
                 var is_multi_role = 0;
+                function delay(time) {
+                    return new Promise(resolve => setTimeout(resolve, time));
+                }
+
                 $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
-                    session = JSON.parse(sessiondata);
-                    if (session.role != 0) {
+                    user = JSON.parse(sessiondata);
+                    if (user.role != 0) {
                         document.getElementById('archived').style.display = "none";
+                        document.getElementById('customer').style.display = "none";
                     }
 
-                    if (session.role != -1) {
+                    if (user.role != -1) {
                         document.getElementById('add').style.display = "none";
+                        if(user.role != 0){
+                            document.getElementById('customer').style.display = "none";
+                        }
                     }
-                    document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
+                    document.getElementById('account').innerHTML = user.username + ' (تسجيل الخروج)';
 
-                    if (session.error == 1) {
+                    if (user.error == 1) {
                         window.location.replace("../index.html");
                     }
-                    user = session;
+                    // user = session;
                     if (user.role.includes(",")) {
                         multi_role = user.role.split(",");
                         is_multi_role = 1;
@@ -200,15 +218,6 @@
 
                 });
 
-                var items = [];
-                var items_copy = [];
-
-                var itemData;
-                var orders;
-                var datTable = '';
-                var itemdetail;
-                var st_bool = 0;
-                var newPrice;
                 //get new price
                 $.get("../../phpFiles/orders/getnewprice.php", { webToken: document.cookie }, function (sessiondata, stauts) {
                     newPrice = JSON.parse(sessiondata);
@@ -216,9 +225,9 @@
 
                 //get defualt prices
                 $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
-                        data = JSON.parse(data);
-                        items = data;
-                        items_copy = data;
+                    data = JSON.parse(data);
+                    items = data;
+                    items_copy = data;
                 });
 
 
@@ -277,7 +286,7 @@
                     });
                 });
 
-                $.get("../../phpFiles/orders/gitorder.php", { webToken: document.cookie }, function (orderdata, stauts) {
+                delay(300).then(() =>$.get("../../phpFiles/orders/gitorder.php", { webToken: document.cookie }, function (orderdata, stauts) {
                     orders = JSON.parse(orderdata);
                     if (orders != 0) {
                         for (let x = 0; x < orders.length; x++) {
@@ -296,7 +305,6 @@
                                         datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#pricePopUp' class='btn btn-success' data-price=" + orders[x][9] + " data-whatever=" + orders[x][8] + ">سعر الطلبية</button>";
 
                                         datTable += " <button onclick='Delete(" + orders[x][0] + ")' class='btn btn-danger btn-rounded' >X حذف</button>";
-                                        // datTable += " مؤرشف";
                                         datTable += "</td> </tr>";
                                     }
                                 } else if (orders[x][5] != -1 && (multi_role.includes(orders[x][5]) || user.role == orders[x][5])) { // employee
@@ -349,7 +357,7 @@
                                                 }
                                             }
                                         }
-                                        if (orders[x][5] == session.role || orders[x][5] == 0) {//check the status (normal status) can delete it
+                                        if (orders[x][5] == user.role || orders[x][5] == 0) {//check the status (normal status) can delete it
                                             datTable += "<td>";
                                             //display the file 
                                             datTable += " <button onclick='open_file(" + orders[x][0] + ")' class='btn btn-secondary btn-rounded' >عرض التصميم</button>";
@@ -371,7 +379,7 @@
                     else {
                         $('.table-item').append('<h1>لا توجد بيانات</h1>');
                     }
-                });
+                }));
                 // edit state
                 $('#exampleModal').on('show.bs.modal', function (event) {
                     var button = $(event.relatedTarget); // Button that triggered the modal
@@ -409,16 +417,14 @@
                     document.getElementById('price_total').value = price;
                 })
 
-
-
                 function drawTable() {
-                        itemData = "";
-                        for (let j = 0; j < items.length; j++) {
-                            itemData += "<th>" + items[j][1] + "</th>";
-                        }
-                        var table = ``;
-                        if (user.role == -1) {
-                            table = `
+                    itemData = "";
+                    for (let j = 0; j < items.length; j++) {
+                        itemData += "<th>" + items[j][1] + "</th>";
+                    }
+                    var table = ``;
+                    if (user.role == -1) {
+                        table = `
                             <div style="overflow-x:auto;">
                                 <table class="table table-striped">
                                     <thead class="thead-dark">
@@ -437,9 +443,9 @@
                             </div>
                                 `;
 
-                        }
-                        else {
-                            table = `
+                    }
+                    else {
+                        table = `
                             <div style="overflow-x:auto;">
                                 <table class="table table-striped">
                                     <thead class="thead-dark">
@@ -459,8 +465,8 @@
                             </div>
                                 `;
 
-                        }
-                        $('.table-item').append(table);
+                    }
+                    $('.table-item').append(table);
                 }
 
 
@@ -502,65 +508,33 @@
                     if (!st_bool) {
                         datTable += "<td>" + '' + "</td>";
                     }
-                    //
-                    // for (let x = 0; x < items.length; x++) {
-                    //         for (let j = 0; j < newPrice.length; j++) {
-                                    
-
-                    //                 if (items[x][0] == newPrice[j][1] && order[1] == newPrice[j][0]) {
-                    //                     items[x][2] = newPrice[j][2];
-                    //                     // console.log(order[1]);
-                    //                     // console.log(newPrice);
-                    //                     console.log(newPrice[j][2]);
-                    //                     console.log(items[x][0]);
-                    //                     console.log(newPrice[j][1]);
-                    //                     console.log(order[1]);
-                    //                     console.log(newPrice[j][0]);
-
-
-
-
-                    //                 }
-                                
-                    //         }                            
-                    //     }
-                    // for (let i = 0; i < newPrice.length; i++) {
-                    //     if(order[1] == newPrice[i][0]){//check the user id 
-                    //         for (let j = 0; j < items.length; j++) {
-                    //             if(newPrice[i][1] == items[j][0] && order[1] == newPrice[i][0]){
-                    //                 console.log("true");
-                    //                 console.log(newPrice[i]);
-                    //                 console.log(items[j][0]);
-                    //                 items[j][2] = newPrice[i][2];
-                    //                 console.log(items);
-                    //                 console.log("done");
-                    //             }                                
-                    //         }
-                    //     }
-                    // }
-                    // console.log(newPrice);
-                    // console.log(order);
-
-                    // console.log(items);
-
-                    // // items = [];
-                    // // items = items_copy;
-                    // console.log(items_copy);
 
                     if (order[6].includes(",")) {
+                        let is_edited = 0;
                         itemdetail = order[6].split(",");
                         for (let item_ctr = 0; item_ctr < itemdetail.length - 1; item_ctr++) {
                             if (itemdetail[item_ctr] != 0) {
                                 datTable += "<td>" + itemdetail[item_ctr] + "</td>";
-                                Total_price += (itemdetail[item_ctr] * items[item_ctr][2]);
+                                for (let k = 0; k < newPrice.length; k++) {
+                                    if (newPrice[k][1] == items[item_ctr][0] && order[1] == newPrice[k][0]) {
+                                        Total_price += (itemdetail[item_ctr] * newPrice[k][2]);
+                                        is_edited = 1;
+                                    }
+                                }
+                                if (is_edited) {
+                                    is_edited = 0;
+                                    continue;
+                                }
+                                else {
+                                    Total_price += (itemdetail[item_ctr] * items[item_ctr][2]);
+                                }
                             }
                             else {
                                 datTable += "<td>" + " " + "</td>";
                             }
                         }
                     }
-                    order[9]= Total_price;
-                    console.log(order[9]);
+                    order[9] = Total_price;
                 }
 
             </script>

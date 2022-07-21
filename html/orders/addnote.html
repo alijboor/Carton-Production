@@ -32,6 +32,7 @@
         h6 {
             font-family: "Raleway", sans-serif
         }
+
         .w3-bar-block .w3-bar-item {
             text-align: center !important;
         }
@@ -59,7 +60,8 @@
                     class="fa fa-user fa-fw w3-margin-left"></i>عرض الطلبات</a>
 
             <a id="add" href="../orders/addorder.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
-                    class="fa fa-user fa-fw w3-margin-left"></i>اضافة طلبية</a>
+                    class="fa fa-file fa-fw w3-margin-left" style="text-align: center;"></i>اضافة طلبية</a>
+
             <a id="archived" href="../orders/archived.html" onclick="w3_close()"
                 class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-left"></i>الطلبيات
                 المؤرشفة</a>
@@ -129,13 +131,13 @@
 
         /////
         $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
-        var session = JSON.parse(sessiondata);
-        console.log(session);
-        userid = session.userid;
-        if (session.error == 1) {
-            window.location.replace("../index.html");
-        }
-    });
+            var session = JSON.parse(sessiondata);
+            console.log(session);
+            userid = session.userid;
+            if (session.error == 1) {
+                window.location.replace("../index.html");
+            }
+        });
 
         const params = window.location.search;
         const orderid = params.substring(params.indexOf('?') + 1, params.length);

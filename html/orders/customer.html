@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>الطلبات</title>
+    <link rel='stylesheet' href='../../cssFile/order.css'>
+    <meta charset="UTF-8" lang="ar">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            direction: rtl;
+        }
+
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Raleway", sans-serif
+        }
+
+        .w3-bar-block .w3-bar-item {
+            text-align: center !important;
+        }
+    </style>
+</head>
+
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+
+    <!-- Sidebar/menu -->
+    <nav class="w3-sidebar w3-collapse w3-white w3-animate-right" style="z-index:3;width:300px;" id="mySidebar"><br>
+        <div class="w3-container">
+            <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey"
+                title="close menu">
+                <i class="fa fa-remove"></i>
+            </a>
+            <a href="../orders/orders.html"><img src="../../assets/logo.jpg" style="width:100%;" class="w3-round"></a>
+            <br><br>
+        </div>
+        <div class="w3-bar-block">
+            <a href="../../phpFiles/logout.php" id="account" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding w3-text-teal"><i
+                    class="fa fa-th-large fa-fw w3-margin-left"></i></a>
+            <a href="../orders/orders.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                    class="fa fa-file fa-fw w3-margin-left"></i>عرض الطلبات</a>
+
+            <a id="add" href="../orders/addorder.html" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i
+                    class="fa fa-file fa-fw w3-margin-left" style="text-align: center;"></i>اضافة طلبية</a>
+            <a id="archived" href="../orders/archived.html" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-left"></i>الطلبيات
+                المؤرشفة</a>
+            <a id="customer" href="../orders/customer.html" onclick="w3_close()"
+                class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw w3-margin-left"></i>عرض الزبائن</a>
+
+        </div>
+    </nav>
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+        title="close side menu" id="myOverlay"></div>
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-right:300px">
+
+        <!-- Header -->
+        <header id="portfolio">
+            <div class="w3-container">
+                <h1>
+                    <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i
+                            class="fa fa-bars"></i></span>
+                    <a href="../orders/orders.html"><img src="../../assets/logo.jpg" style="width:65px;"
+                            class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
+                    <b></b>
+                </h1>
+            </div>
+        </header>
+
+        <div class="w3-container w3-padding-large" style="margin-bottom:32px">
+            <div class="modal fade" id="pricePopUp" tabindex="-1" aria-labelledby="pricePopUpLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="pricePopUpLabel">الاسعار للزبون</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="recipient-name" class="col-form-label">رقم الزبون:</label>
+                                    <input type="text" class="form-control" id="userid" disabled>
+                                </div>
+
+                                <div class="form-group" id="newOne">
+                                </div>
+
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" onclick="saveNewPrice()">حفظ</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">خروج</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="table-item">
+                <input class="form-control" id="myInput" type="text" placeholder="ابحث عن ...">
+            </div>
+
+        </div>
+
+        <script>
+            function w3_open() {
+                document.getElementById("mySidebar").style.display = "block";
+                document.getElementById("myOverlay").style.display = "block";
+            }
+
+            function w3_close() {
+                document.getElementById("mySidebar").style.display = "none";
+                document.getElementById("myOverlay").style.display = "none";
+            }
+
+
+
+            var user;
+            var session;
+            var items = [];
+            var itemData;
+            var orders;
+            var datTable = '';
+            var itemdetail;
+            var newPrice;
+
+            $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+                session = JSON.parse(sessiondata);
+                if (session.role != 0) {
+                    document.getElementById('archived').style.display = "none";
+                }
+                if (session.role != -1) {
+                    document.getElementById('add').style.display = "none";
+                }
+                document.getElementById('account').innerHTML = session.username + ' (تسجيل الخروج)';
+                if (session.error == 1) {
+                    window.location.replace("../index.html");
+                }
+                if (session.role != 0) {
+                    window.location.replace("orders.html");
+                }
+                user = session;
+
+
+            });
+
+            //get items 
+            $.get("../../phpFiles/orders/getitem.php", { webToken: document.cookie }, function (data, stauts) {
+                data = JSON.parse(data);
+                items = data;
+            });
+
+            //
+            $(document).ready(function () {
+                $("#myInput").on("keyup", function () {
+                    var value = $(this).val().toLowerCase();
+                    $("#myTable tr").filter(function () {
+                        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                    });
+                });
+            });
+
+            //get new price
+            $.get("../../phpFiles/orders/getnewprice.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+                newPrice = JSON.parse(sessiondata);
+            });
+
+
+            $.get("../../phpFiles/users/getusers.php", { webToken: document.cookie }, function (orderdata, stauts) {
+                users = JSON.parse(orderdata);
+                var is_edited = 0;
+                console.log(users);
+                for (let x = 0; x < users.length; x++) {
+                    if (users[x][2] == -1) {
+                        datTable += "<tr><td>" + users[x][1] + "</td>";
+                        for (let j = 0; j < items.length; j++) {
+                            for (let k = 0; k < newPrice.length; k++) {
+                                if (newPrice[k][1] == items[j][0] && users[x][0] == newPrice[k][0]) {
+                                    datTable += "<td>" + newPrice[k][2] + "</td>";
+                                    is_edited = 1;
+                                }
+                            }
+                            if (is_edited) {
+                                is_edited = 0;
+                                continue;
+                            }
+                            else {
+                                datTable += "<td>" + items[j][2] + "</td>";
+                            }
+
+                        }
+
+                        //tools coloum
+                        datTable += "<td>";
+                        datTable += " <button type='button' data-bs-toggle='modal' data-bs-target='#pricePopUp' class='btn btn-success' data-whatever=" + users[x][0] + ">تعديل الاسعار</button>";
+                        datTable += "</td> </tr>";
+
+                    }
+                }
+                drawTable();
+
+            });
+
+            var table;
+            function drawTable() {
+                itemData = "";
+                for (let j = 0; j < items.length; j++) {
+                    itemData += "<th>" + items[j][1] + "</th>";
+                }
+                table = `
+                            <div style="overflow-x:auto;">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            <th scope="col">اسم الزبون</th>
+                                            `+ itemData + `
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">`+ datTable + `</tbody>
+                                </table>
+                            </div>
+                                `;
+                $('.table-item').append(table);
+            }
+
+
+            $('#pricePopUp').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var id = button.data('whatever');
+                // var price = button.data('price');
+
+                var table_rows = "";
+                var is_edited = 0;
+                var price_table = ``;
+                for (let x = 0; x < users.length; x++) {
+                    if (users[x][0] == id) {
+                        for (let j = 0; j < items.length; j++) {
+                            for (let k = 0; k < newPrice.length; k++) {
+                                if (newPrice[k][1] == items[j][0] && users[x][0] == newPrice[k][0]) {
+                                    table_rows += "<td><input type='number' id='price" + j + "' value=" + newPrice[k][2] + "></td>";
+                                    is_edited = 1;
+                                }
+                            }
+                            if (is_edited) {
+                                is_edited = 0;
+                                continue;
+                            }
+                            else {
+                                table_rows += "<td><input type='number' id='price" + j + "' value=" + items[j][2] + "></td>";
+                            }
+
+                        }
+                    }
+                }
+                price_table = `
+                            <div style="overflow-x:auto;">
+                                <table class="table table-striped">
+                                    <thead class="thead-dark">
+                                        <tr>
+                                            `+ itemData + `
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myTable">`+ table_rows + `</tbody>
+                                </table>
+                            </div>
+                                `;
+
+                // datTable += "<td><input type='number' id='price" + j + "' value=" + data[j][2] + " disabled></td></td>";
+
+                document.getElementById('userid').value = id;
+                $('#newOne').append(price_table);
+            });
+
+
+            // close the modal
+            $('#pricePopUp').on('hidden.bs.modal', function () {
+                $('#newOne').empty();
+            });
+
+            function saveNewPrice(){
+                for (let i = 0; i < items.length; i++) {
+                    var x = document.getElementById("price"+i).value;
+                    console.log(items[i]);                    
+                }
+            }
+
+        </script>
+
+</body>
+
+</html>
