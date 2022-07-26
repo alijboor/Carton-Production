@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel='stylesheet' href='../../cssFile/addorder.css'>
+
+    <title>اضافة ملاحظة</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            direction: rtl;
+        }
+
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        label {
+            font-family: "Raleway", sans-serif
+        }
+
+        label {
+            font-size: 50;
+            color: white;
+            font-weight: 600;
+        }
+
+        .w3-bar-block .w3-bar-item {
+            text-align: center !important;
+        }
+    </style>
+</head>
+
+<body class="w3-light-grey w3-content" style="max-width:1600px">
+    <script>
+        $(function () {
+            $(".bar").load("../dashboard/sidebar.html");
+        });
+    </script>
+
+    <div class="bar">
+
+    </div>
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-right:300px">
+
+        <div style="overflow-x:auto;" class="m-2">
+            <h1>اضافة مستخدم</h1>
+            <div class="modal-body">
+                <form id="save" action="../../phpFiles/users/adduser.php" method="POST">
+                    <label for="username" class="col-form-label">اسم المستخدم:</label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="اسم المستخدم">
+
+
+                    <label for="username" class="col-form-label">كلمة السر:</label>
+                    <input type="text" class="form-control" name="pwd" id="pwd" placeholder="كلمة السر">
+
+
+                    <div class="form-group">
+                        <label for="recipient-name" class="col-form-label">طبيعة المستخدم</label>
+                        <select class="form-select" aria-label="Default select example" id="statusText"
+                            name="statusText">
+                            <option value="-1">زبون</option>
+                            <option value="0">مدير</option>
+                            <option value="1">مصمم</option>
+                            <option value="2">محاسب</option>
+                            <option value="5">مخزن</option>
+                        </select>
+                    </div>
+
+
+                    <br><br>
+                    <input name="submit" type="submit" class="btn btn-primary" value="اضف مستخدم"></input>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        var session;
+        /////
+        $.get("../../phpFiles/getsessiondata.php", { webToken: document.cookie }, function (sessiondata, stauts) {
+            var session = JSON.parse(sessiondata);
+            userid = session.userid;
+            if (session.error == 1) {
+                window.location.replace("../index.html");
+            }
+        });
+
+
+        $("form").submit(function (event) {
+            var formData = {
+                username: $("#username").val(),
+                pass: $("#pwd").val(),
+                role: $("#statusText").val(),
+            };
+            $.ajax({
+                type: "POST",
+                url: "../../phpFiles/users/adduser.php",
+                data: formData,
+                dataType: "text",
+                encode: true,
+            }).done(function (response) {
+                var jsonData = JSON.parse(response);
+                if (jsonData.success == "1") {
+                    alert(" تم حفظ ");
+                    window.location.replace("customer.html");
+                }
+                else if (jsonData.success == "0") {
+                    alert(" حدثت مشكلة ");
+                }
+            });
+
+            event.preventDefault();
+        });
+
+        function AddUser() {
+            var statee = document.getElementById('statusText').value;
+        }
+
+    </script>
+
+</body>
+
+</html>
